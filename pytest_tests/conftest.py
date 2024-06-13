@@ -1,6 +1,10 @@
+from datetime import datetime, timedelta
+
 import pytest
 
 from django.test.client import Client
+from django.conf import settings
+from django.utils import timezone
 
 from news.models import News, Comment
 
@@ -10,12 +14,27 @@ def enable_db_access(db):
     pass
 
 @pytest.fixture
-def news():
+def news(db):
     news = News.objects.create(
         title='Заголовок',
         text='Текст',
     )
     return news
+
+
+@pytest.fixture
+def multiple_news(db):
+    today = datetime.today()
+    multiple_news = []
+    for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
+        news = News(title=f'Новость {index}',
+                    text='Просто текст.',
+                    date=today - timedelta(days=index))
+        multiple_news.append(news)
+    News.objects.bulk_create(multiple_news)
+    return multiple_news
+
+
 
 @pytest.fixture
 def author(django_user_model):
@@ -47,6 +66,20 @@ def comment(author, news):
         author=author,
     )
     return comment
+
+
+@pytest.fixture
+def multiple_comments(author, news):
+    now = timezone.now()
+    for index in range(10):
+        comment = Comment.objects.create(
+            news=news,
+            author=author,
+            text=f'Текст {index}',
+            )
+        comment.created = now + timedelta(days=index)
+        comment.save()
+
 
 @pytest.fixture
 def id_for_args(comment):
