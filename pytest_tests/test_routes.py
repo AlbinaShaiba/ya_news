@@ -17,9 +17,9 @@ def test_pages_availability(client, name):
     assert response.status_code == HTTPStatus.OK
 
 
-def test_news_detail_page(client, news):
+def test_news_detail_page(client, news, id_for_args_news):
     name = 'news:detail'
-    url = reverse(name, args=(news.id,))
+    url = reverse(name, args=id_for_args_news)
     response = client.get(url)
     assert response.status_code == HTTPStatus.OK
 
@@ -36,9 +36,9 @@ def test_news_detail_page(client, news):
     ('news:edit', 'news:delete'),
 )
 def test_pages_availability_for_different_users(
-        parametrized_client, name, comment, expected_status
+        parametrized_client, name, comment, expected_status, id_for_args_comment
 ):
-    url = reverse(name, args=(comment.id,))
+    url = reverse(name, args=id_for_args_comment)
     response = parametrized_client.get(url)
     assert response.status_code == expected_status
 
@@ -46,8 +46,8 @@ def test_pages_availability_for_different_users(
 @pytest.mark.parametrize(
     'name, args',
     (
-        ('news:edit', pytest.lazy_fixture('id_for_args')),
-        ('news:delete', pytest.lazy_fixture('id_for_args')),
+        ('news:edit', pytest.lazy_fixture('id_for_args_comment')),
+        ('news:delete', pytest.lazy_fixture('id_for_args_comment')),
     ),
 )
 
@@ -57,4 +57,3 @@ def test_redirects(client, name, args):
     expected_url = f'{login_url}?next={url}'
     response = client.get(url)
     assertRedirects(response, expected_url)
-    

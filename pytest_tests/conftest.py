@@ -82,5 +82,22 @@ def multiple_comments(author, news):
 
 
 @pytest.fixture
-def id_for_args(comment):
+def id_for_args_comment(comment):
     return (comment.id,)
+
+@pytest.fixture
+def id_for_args_news(news):
+    return (news.id,)
+
+
+@pytest.fixture
+def form_data():
+    return {
+        'text': 'Новый текст комментария',
+        'news': news,
+        'author': author_client,
+    }
+
+@pytest.fixture
+def new_text():
+    return 'Новый текст комментария'
