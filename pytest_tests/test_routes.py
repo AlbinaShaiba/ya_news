@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from pytest_django.asserts import assertRedirects
 
+
 @pytest.mark.parametrize(
     'name',
     ('news:home', 'users:login', 'users:logout', 'users:signup')

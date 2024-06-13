@@ -6,12 +6,13 @@ from django.test.client import Client
 from django.conf import settings
 from django.utils import timezone
 
-from news.models import News, Comment
+from news.models import Comment, News
 
 
 @pytest.fixture(autouse=True)
 def enable_db_access(db):
     pass
+
 
 @pytest.fixture
 def news(db):
@@ -35,7 +36,6 @@ def multiple_news(db):
     return multiple_news
 
 
-
 @pytest.fixture
 def author(django_user_model):
     return django_user_model.objects.create(username='Автор')
@@ -52,11 +52,13 @@ def author_client(author):
     client.force_login(author)
     return client
 
+
 @pytest.fixture
 def not_author_client(not_author):
     client = Client()
     client.force_login(not_author)
     return client
+
 
 @pytest.fixture
 def comment(author, news):
@@ -85,6 +87,7 @@ def multiple_comments(author, news):
 def id_for_args_comment(comment):
     return (comment.id,)
 
+
 @pytest.fixture
 def id_for_args_news(news):
     return (news.id,)
@@ -97,6 +100,7 @@ def form_data():
         'news': news,
         'author': author_client,
     }
+
 
 @pytest.fixture
 def new_text():

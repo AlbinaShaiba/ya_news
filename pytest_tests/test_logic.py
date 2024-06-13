@@ -1,13 +1,13 @@
-from http import HTTPStatus
-
 import pytest
+
+from http import HTTPStatus
 
 from pytest_django.asserts import assertRedirects, assertFormError
 from pytils.translit import slugify
 
 from django.urls import reverse
 
-from news.models import News, Comment
+from news.models import Comment
 from news.forms import BAD_WORDS, WARNING
 
 
@@ -46,7 +46,8 @@ def test_user_cant_use_bad_words(author_client, id_for_args_news):
     assert comments_count == 0
 
 
-def test_author_can_edit_comment(author_client, form_data, comment, id_for_args_comment, id_for_args_news, new_text):
+def test_author_can_edit_comment(author_client, form_data, comment, id_for_args_comment, 
+                                 id_for_args_news, new_text):
     url = reverse('news:edit', args=id_for_args_comment)
     url_comments = reverse('news:detail', args=id_for_args_news)
     form_data['text'] = new_text
@@ -56,7 +57,8 @@ def test_author_can_edit_comment(author_client, form_data, comment, id_for_args_
     assert comment.text == new_text
 
 
-def test_user_cant_edit_comment_of_another_user(not_author_client, form_data, comment, id_for_args_comment, new_text):
+def test_user_cant_edit_comment_of_another_user(not_author_client, form_data, comment, 
+                                                id_for_args_comment, new_text):
     url = reverse('news:edit', args=id_for_args_comment)
     form_data['text'] = new_text
     response = not_author_client.post(url, form_data)

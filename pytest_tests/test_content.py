@@ -1,5 +1,3 @@
-import pytest
-
 from django.conf import settings
 from django.urls import reverse
 
@@ -39,6 +37,7 @@ def test_anonymous_client_has_no_form(client, id_for_args_news):
     response = client.get(detail_url)
     print(response.context)
     assert 'form' not in response.context
+   
         
 def test_authorized_client_has_form(author_client, id_for_args_news):
     detail_url = reverse('news:detail', args=id_for_args_news)
