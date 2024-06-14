@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 
 import pytest
-
-from django.test.client import Client
 from django.conf import settings
+from django.test.client import Client
+from django.urls import reverse
 from django.utils import timezone
 
 from news.models import Comment, News
@@ -12,6 +12,25 @@ from news.models import Comment, News
 @pytest.fixture(autouse=True)
 def enable_db_access(db):
     pass
+
+
+@pytest.fixture
+def home_url_reverse():
+    return reverse('news:home')
+
+
+@pytest.fixture
+def detail_url_reverse(news):
+    return reverse('news:detail', args=(news.id,))
+
+@pytest.fixture
+def edit_url_reverse(comment):
+    return reverse('news:edit', args=(comment.id,))
+
+
+@pytest.fixture
+def delete_url_reverse(comment):
+    return reverse('news:delete', args=(comment.id,))
 
 
 @pytest.fixture
@@ -26,12 +45,12 @@ def news(db):
 @pytest.fixture
 def multiple_news(db):
     today = datetime.today()
-    multiple_news = []
-    for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1):
-        news = News(title=f'Новость {index}',
-                    text='Просто текст.',
-                    date=today - timedelta(days=index))
-        multiple_news.append(news)
+    multiple_news = [
+        News(title=f'Новость {index}',
+             text='Просто текст.',
+             date=today - timedelta(days=index))
+        for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)
+        ]
     News.objects.bulk_create(multiple_news)
     return multiple_news
 
@@ -63,7 +82,7 @@ def not_author_client(not_author):
 @pytest.fixture
 def comment(author, news):
     comment = Comment.objects.create(
-        news = news,
+        news=news,
         text='Текст',
         author=author,
     )
@@ -78,30 +97,6 @@ def multiple_comments(author, news):
             news=news,
             author=author,
             text=f'Текст {index}',
-            )
+        )
         comment.created = now + timedelta(days=index)
         comment.save()
-
-
-@pytest.fixture
-def id_for_args_comment(comment):
-    return (comment.id,)
-
-
-@pytest.fixture
-def id_for_args_news(news):
-    return (news.id,)
-
-
-@pytest.fixture
-def form_data():
-    return {
-        'text': 'Новый текст комментария',
-        'news': news,
-        'author': author_client,
-    }
-
-
-@pytest.fixture
-def new_text():
-    return 'Новый текст комментария'
